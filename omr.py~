@@ -1,0 +1,59 @@
+import cv2 
+from cv2 import *
+import numpy as np
+
+
+
+def filetring(im):
+
+	p,q = im.shape[:2]
+	for x in range(0,p-1):
+		for y in range(0,q-1):
+			if im[x,y]<150:
+				im[x,y] = 0
+			else:
+				im[x,y] = 255
+
+	return im
+
+a = cv2.imread('omr.jpeg')
+b= cv2.cvtColor(a, cv2.COLOR_BGR2GRAY)
+
+cimg = (b)
+b= cv2.medianBlur(b,5)
+ret,roi = cv2.threshold(b,100,255, cv2.THRESH_BINARY)
+cv2.imshow('detected circles',roi)
+cv2.waitKey(0)
+
+"""Algorithim to be followed--
+-> Take omr sheet with four points at the corners.
+-> use these points to get the orientation of the sheet
+-> Make the orientation of the sheet suitable
+-> Now find the centers of the circles using HoughCircles
+-> fing circle with pixel values value=0(black)
+-> mach these centers with the mapped responses on x-axis with the same question on 
+	yaix with the another question.
+-> +1 for match ,-1 for worng match ,0 for no match
+-> read name of the person using hand written ocr.
+"""
+
+circles = cv2.HoughCircles(b,cv.CV_HOUGH_GRADIENT,1,20,
+                            param1=50,param2=30,minRadius=0,maxRadius=0)
+
+circles = np.uint16(np.around(circles))
+print circles
+for i in circles[0,:]:
+	print roi[i[0],i[1]]
+	if roi[i[1],i[0]]<20:
+	# if b[i[0],i[1]]<10:
+	    cv2.circle(cimg,(i[0],i[1]),i[2],(0,255,0),2)
+	    cv2.circle(cimg,(i[0],i[1]),2,(0,0,255),3)
+
+cv2.imshow('detected circles',cimg)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+
+
+# cv2.imshow('dasdfd',im_gray)
+# cv2.waitKey()
